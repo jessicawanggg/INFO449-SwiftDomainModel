@@ -81,6 +81,20 @@ class MoneyTests: XCTestCase {
     XCTAssert(total.currency == "GBP")
   }
 
+// Extra credit tests
+  func testNegativeMoneyAmount() {
+    let negative = Money(amount: -10, currency: "USD")
+    XCTAssertEqual(negative.amount, -10)
+    XCTAssertEqual(negative.currency, "USD")
+  }
+
+  func testIllegalCurrencyCode() {
+    let IllegalCurrency = Money(amount: 10, currency: "TEST")
+    let converted = IllegalCurrency.convert("USD")
+    XCTAssertEqual(converted.currency, "USD")
+    XCTAssertEqual(converted.amount, 10) // Assuming illegal currencies don't convert
+  }
+
     static var allTests = [
         ("testCanICreateMoney", testCanICreateMoney),
 
@@ -96,6 +110,10 @@ class MoneyTests: XCTestCase {
         
         ("testAddUSDtoUSD", testAddUSDtoUSD),
         ("testAddUSDtoGBP", testAddUSDtoGBP),
+        
+        // Extra credit tests
+        ("testNegativeMoneyAmount", testNegativeMoneyAmount),
+        ("testIllegalCurrencyCode", testIllegalCurrencyCode)
     ]
 }
 

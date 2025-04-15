@@ -14,22 +14,27 @@ public struct Money {
 
     private static let exchangeRatesToUSD: [String: Double] = [
         "USD": 1.0,
-        "GBP": 2.0,    // 1 GBP = 2 USD
-        "EUR": 2.0 / 3.0, // 1 EUR = 2/3 USD
-        "CAN": 0.8     // 1 CAN = 0.8 USD
+        "GBP": 2.0,
+        "EUR": 2.0 / 3.0,
+        "CAN": 0.8
     ]
     
+    
     init(amount: Int, currency: String) {
-        guard Money.exchangeRatesToUSD.keys.contains(currency) else {
-            fatalError("Unsupported currency: \(currency)")
+        if let _ = Money.exchangeRatesToUSD[currency] {
+            self.amount = amount
+            self.currency = currency
+        } else {
+            self.amount = amount
+            self.currency = "USD"
         }
-        self.amount = amount
-        self.currency = currency
     }
     func convert(_ to: String) -> Money {
-        guard let fromRate = Money.exchangeRatesToUSD[self.currency],
-                let toRate = Money.exchangeRatesToUSD[to] else {
-            fatalError("Unsupported currency conversion from \(self.currency) to \(to)")
+        guard let fromRate = Money.exchangeRatesToUSD[self.currency] else {
+            return Money(amount: self.amount, currency: "USD")
+        }
+        guard let toRate = Money.exchangeRatesToUSD[to] else {
+            return Money(amount: self.amount, currency: "USD")
         }
         let usdAmount = Double(self.amount) * fromRate
         let convertedAmount = Int((usdAmount / toRate).rounded())
@@ -86,6 +91,16 @@ public class Job {
             type = .Salary(increased)
         }
     }
+    // Extra credit
+    func convert() {
+        switch self.type {
+        case .Hourly(let rate):
+            let salary = UInt(((rate * 2000) / 1000.0).rounded(.up) * 1000)
+            self.type = .Salary(salary)
+        case .Salary:
+            break
+        }
+    }
 }
 
 ////////////////////////////////////
@@ -110,9 +125,9 @@ public class Person {
             }
         }
     }
-    init(firstName: String, lastName: String, age: Int) {
-        self.firstName = firstName
-        self.lastName = lastName
+    init(firstName: String?, lastName: String?, age: Int) {
+        self.firstName = firstName ?? ""
+        self.lastName = lastName ?? ""
         self.age = age
     }
     func toString() -> String {
@@ -124,6 +139,17 @@ public class Person {
         } ?? "nil"
         let spouseDesc = spouse?.firstName ?? "nil"
         return "[Person: firstName:\(firstName) lastName:\(lastName) age:\(age) job:\(jobDesc) spouse:\(spouseDesc)]"
+    }
+    
+    // Extra credit
+    var description: String {
+        if !firstName.isEmpty && !lastName.isEmpty {
+            return "\(firstName) \(lastName)"
+        } else if !firstName.isEmpty {
+            return firstName
+        } else {
+            return lastName
+        }
     }
 }
 
